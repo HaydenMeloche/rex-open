@@ -1,0 +1,19 @@
+{
+  "name": "rex-open",
+  "version": "0.1.0",
+  "description": "For the Rex terminal: lets the rex-open picker (Alt+Cmd+O) follow Claude Code when it changes directory, and keeps the picker up to date.",
+  "author": {
+    "name": "Hayden"
+  },
+  "keywords": [
+    "rex",
+    "terminal",
+    "picker",
+    "files",
+    "links",
+    "cwd"
+  ],
+  "license": "MIT",
+  "repository": "https://github.com/HaydenMeloche/rex-open",
+  "homepage": "https://github.com/HaydenMeloche/rex-open"
+}

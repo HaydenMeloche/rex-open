@@ -1,0 +1,13 @@
+{
+  "name": "rex-open",
+  "description": "rex-open: a Rex terminal picker for the files, folders, links and commands in a pane's output.",
+  "owner": {
+    "name": "Hayden"
+  },
+  "plugins": [
+    {
+      "name": "rex-open",
+      "source": "./"
+    }
+  ]
+}
