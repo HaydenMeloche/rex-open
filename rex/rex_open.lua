@@ -295,27 +295,43 @@ end
 
 -- Splits Rex's HTML into lines, each with its text, the pieces drawn in a
 -- color (how agents show code), and whether any of it has a background (how
--- they show the prompt you typed).
+-- they show the prompt you typed). A piece the agent wrapped onto the next
+-- line, which ends the line with a space, is joined with the piece that
+-- starts the next line.
 local function html_lines(html)
   html = html:gsub('^<div style="font%-family[^"]*">', "")
   local lines = {}
   for l in (html .. "\n"):gmatch("([^\n]*)\n") do
     local text, code, bg, pos = {}, {}, false, 1
+    local code_starts, code_ends = false, false
     while true do
       local s, e, style, inner = l:find('<div style="([^"]*)">(.-)</div>', pos)
       if not s then break end
-      text[#text + 1] = unescape(l:sub(pos, s - 1))
+      local before = unescape(l:sub(pos, s - 1))
+      text[#text + 1] = before
       local piece = unescape(inner)
       text[#text + 1] = piece
+      code_ends = false
       if style:find("background", 1, true) then
         bg = true
       elseif style:find(";color:", 1, true) or style:sub(1, 6) == "color:" then
+        if #text == 2 and before:match("^%s*$") then code_starts = true end
         code[#code + 1] = piece
+        code_ends = true
       end
       pos = e + 1
     end
-    text[#text + 1] = unescape(l:sub(pos))
-    lines[#lines + 1] = { text = table.concat(text), code = code, bg = bg }
+    local after = unescape(l:sub(pos))
+    text[#text + 1] = after
+    if not after:match("^%s*$") then code_ends = false end
+    lines[#lines + 1] = { text = table.concat(text), code = code, bg = bg,
+                          code_starts = code_starts, code_ends = code_ends }
+  end
+  for i = 1, #lines - 1 do
+    local l, nl = lines[i], lines[i + 1]
+    if l.code_ends and nl.code_starts and l.code[#l.code]:match("%s$") then
+      l.code[#l.code] = l.code[#l.code] .. nl.code[1]
+    end
   end
   return lines
 end
